@@ -9,8 +9,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.validation.annotation.PhoneNumber;
+import org.example.validation.annotation.YearMonth;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -18,10 +21,12 @@ import java.time.LocalDateTime;
 @Builder
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserRegisterRequest {
-    @NotNull  // != null
-    @NotEmpty // !=null && name != " "
-    @NotBlank // !=null && name != "" && name != " "
+    //@NotNull  // != null
+    //@NotEmpty // !=null && name != ""
+    //@NotBlank // !=null && name != "" && name != " "
     private String name;
+
+    private String nickname;
 
     @Size(min = 1,max =12)
     @NotBlank
@@ -35,9 +40,23 @@ public class UserRegisterRequest {
     @Email
     private String email;
 
-    @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$",message = "휴대폰 번호 양식에 맞지 않습니다.")
+    @PhoneNumber
     private String phoneNumber;
 
     @FutureOrPresent
     private LocalDateTime registerAt;
+
+    @YearMonth(patten = "yyyyMM")
+    private String birthDayYearMonth;
+
+    @AssertTrue(message = "name or nickname 은 반드시 1개가 존재해야 합니다.")
+    private boolean isNameCheck(){
+        if (Objects.nonNull(name) && !name.isBlank()){
+            return true;
+        }
+        if (Objects.nonNull(nickname) && !nickname.isBlank()){
+            return true;
+        }
+        return false;
+    }
 }
